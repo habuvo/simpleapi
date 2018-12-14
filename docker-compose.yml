@@ -1,0 +1,33 @@
+version: "3.5"
+services:
+
+  api:
+    container_name: api
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    working_dir: /go/bin
+    volumes:
+      - ./go/src:/go/src
+    networks:
+      - net
+    links:
+      - db:db
+    depends_on:
+      - db
+
+  db:
+    image: mysql
+    container_name: db
+    volumes:
+      - ./docker/:/etc/mysql/conf.d
+      - ./docker/:/docker-entrypoint-initdb.d
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=true
+      - MYSQL_DATABASE=demo
+      - MYSQL_USER=demo
+      - MYSQL_PASSWORD=demo
+
+networks:
+  net:
+    name: net
