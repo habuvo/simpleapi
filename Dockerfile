@@ -1,14 +1,18 @@
-FROM golang:alpine as builder
+FROM golang as builder
 
-RUN apk update && apk add --no-cache git
+WORKDIR /app
 
-COPY . $GOPATH/src/simpleapi/
-WORKDIR $GOPATH/src/simpleapi/
+COPY go.mod .
+COPY go.sum .
 
-RUN go get -d -v
+RUN go mod download
+
+COPY . .
+
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o main .
+
 FROM scratch
-COPY --from=builder /go/src/simpleapi/main /app/
+COPY --from=builder /app/main /app/
 WORKDIR /app
 ENTRYPOINT ["/app/main"]
-EXPOSE 8081:8081
+EXPOSE 8081
