@@ -19,6 +19,8 @@ services:
   db:
     image: mysql
     container_name: db
+    networks:
+      - net
     volumes:
       - ./docker/:/etc/mysql/conf.d
       - ./docker/:/docker-entrypoint-initdb.d
